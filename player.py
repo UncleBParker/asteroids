@@ -2,6 +2,8 @@ import pygame
 from circleshape import CircleShape
 from constants import PLAYER_RADIUS, LINE_WIDTH, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOOT_SPEED, PLAYER_SHOT_COOLDOWN_SECONDS
 from shot import Shot
+from asteroid import Asteroid
+from utils import triangle_circle_collision
 
 class Player(CircleShape):
 	def __init__(self, x, y):
@@ -53,3 +55,15 @@ class Player(CircleShape):
 			self.shot_cooldown_timer = PLAYER_SHOT_COOLDOWN_SECONDS
 			shot = Shot(*self.position)
 			shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
+
+	def triangle_circle_collision(tri_points, cx, cy, radius):
+		if pygame.point_in_triangle((cx, cy), tri_points):
+			return True
+
+	def collides_with(self, other):
+		if isinstance(self, Player) and isinstance(other, Asteroid):
+			return triangle_circle_collision(self.triangle(), other.position, other.radius)
+		if isinstance(self, Asteroid) and isinstance(other, Player):
+			return triangle_circle_collision(other.triangle(), self.position, self.radius)
+		# Fallback: circle–circle for everything else
+		return self.position.distance_to(other.position) < (self.radius + other.radius)
