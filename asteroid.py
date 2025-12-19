@@ -7,6 +7,13 @@ from logger import log_event
 class Asteroid(CircleShape):
 	def __init__(self, x, y, radius):
 		super().__init__(x, y, radius)
+		self.kind = radius // ASTEROID_MIN_RADIUS
+		if self.kind == 1:
+			self.score_value = 100
+		if self.kind == 2:
+			self.score_value = 50
+		if self.kind == 3:
+			self.score_value = 10
 
 	def draw(self, screen):
 		pygame.draw.circle(screen, "white", self.position, self.radius, LINE_WIDTH)
