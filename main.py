@@ -45,6 +45,7 @@ def main():
         log_state()
         for event in pygame.event.get():
             if event.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE]:
+                print(f"Game quit. \n{scoreboard(hud.asteroids_destroyed)}")
                 return
         
         screen.fill("black")
