@@ -52,3 +52,13 @@ def triangle_circle_collision(tri, center, radius):
             return True
 
     return False
+
+def score(asteroids_destroyed):
+    return (
+        asteroids_destroyed[1] * 100 +
+        asteroids_destroyed[2] * 50 +
+        asteroids_destroyed[3] * 10
+    )
+
+def scoreboard(asteroids_destroyed): #for print statements
+    return f"Asteroids Destroyed: \n{asteroids_destroyed[1]} Small\n{asteroids_destroyed[2]} Medium\n{asteroids_destroyed[3]} Large\nFinal Score: {score(asteroids_destroyed)}"
