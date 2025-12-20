@@ -1,4 +1,4 @@
-#hud.py
+# hud.py
 import pygame
 
 class HUD(pygame.sprite.Sprite):
