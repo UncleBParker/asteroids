@@ -93,7 +93,7 @@ def main():
                         # redraw HUD so player sees current lives/score
                         hud.draw(screen)
                         # draw "Continue?" message
-                        msg_surf = font.render("Press Space to Continue", True, (255, 255, 255))
+                        msg_surf = font.render(f"{hud.lives}/3 Lives Continue?", True, (255, 255, 255))
                         msg_rect = msg_surf.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
                         screen.blit(msg_surf, msg_rect)
 
