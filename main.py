@@ -58,6 +58,11 @@ def main():
         screen.fill("black")
         updatable.update(dt)
 
+        # check if player or asteroids left screen and wrap them to other side
+        player.wrap_around_screen(SCREEN_WIDTH, SCREEN_HEIGHT)
+        for asteroid in asteroids:
+            asteroid.wrap_around_screen(SCREEN_WIDTH, SCREEN_HEIGHT)
+
         # start checking for game element collisions
         for asteroid in asteroids:
             
@@ -122,6 +127,13 @@ def main():
                     asteroid.split()
                     shot.kill()
                     hud.asteroids_destroyed[asteroid.kind] += 1
+
+            # handle asteroid/asteroid collision:
+            for asteroid2 in asteroids:
+                if asteroid is not asteroid2:
+                    if asteroid.collides_with(asteroid2):
+                        asteroid.split()
+                        asteroid2.split()
 
         # draw all drawable objects
         for each in drawable:
