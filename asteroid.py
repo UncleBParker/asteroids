@@ -9,6 +9,7 @@ class Asteroid(CircleShape):
 	def __init__(self, x, y, radius):
 		super().__init__(x, y, radius)
 		self.kind = radius // ASTEROID_MIN_RADIUS
+		self.ignore_collisions_with = set()
 
 	def draw(self, screen):
 		pygame.draw.circle(screen, "white", self.position, self.radius, LINE_WIDTH)
@@ -29,3 +30,5 @@ class Asteroid(CircleShape):
 		split1.velocity = self.velocity.rotate(new_vector)
 		split2 = Asteroid(*self.position, new_radius)
 		split2.velocity = self.velocity.rotate(-new_vector)
+		split1.ignore_collisions_with.add(split2)
+		split2.ignore_collisions_with.add(split1)

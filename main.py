@@ -11,6 +11,9 @@ from hud import HUD
 
 
 def main():
+    
+    debug = "--debug" in sys.argv
+
     print(f"------------------------------------------------------------")
     print(f"Starting Asteroids with pygame version: {pygame.version.ver}")
     print(f"Screen width: {SCREEN_WIDTH}\nScreen height: {SCREEN_HEIGHT}")
@@ -77,6 +80,7 @@ def main():
                     sys.exit()
                 else:
                     waiting = True
+                    space_down = False
                     while waiting:
                         for event in pygame.event.get():
                             # option to quit during "continue?" pause
@@ -86,9 +90,9 @@ def main():
                                 if event.key == pygame.K_ESCAPE:
                                     print(f"Game quit. \n{hud.scoreboard()}")
                                     sys.exit()
-                            # look for space key press
-                            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                                space_down = True
+                                # look for space key press
+                                if event.key == pygame.K_SPACE:
+                                    space_down = True
                             # stop waiting loop when space key is released
                             if event.type == pygame.KEYUP and event.key == pygame.K_SPACE and space_down:
                                 waiting = False
@@ -112,10 +116,10 @@ def main():
                     player.shot_cooldown_timer = 0
 
                     # clear asteroids and shots
-                    for a in asteroids:
-                        a.kill()
-                    for s in shots:
-                        s.kill()
+                    for asteroid in list(asteroids):
+                        asteroid.kill()
+                    for shot in list(shots):
+                        shot.kill()
 
                     # reset spawn timer so a new field starts fresh
                     asteroidfield.spawn_timer = 0.0
@@ -128,12 +132,42 @@ def main():
                     shot.kill()
                     hud.asteroids_destroyed[asteroid.kind] += 1
 
-            # handle asteroid/asteroid collision:
-            for asteroid2 in asteroids:
-                if asteroid is not asteroid2:
-                    if asteroid.collides_with(asteroid2):
-                        asteroid.split()
-                        asteroid2.split()
+        # handle asteroid/asteroid collisions:
+        asteroid_list = list(asteroids)
+        for i in range(len(asteroid_list)):
+            a = asteroid_list[i]
+            for j in range(i + 1, len(asteroid_list)):
+                b = asteroid_list[j]
+                # skip if they’re in each other’s ignore sets
+                if (b in a.ignore_collisions_with) or (a in b.ignore_collisions_with):
+                    continue
+                # collide if not in each other's ignore sets
+                if a.collides_with(b):
+                    a.split()
+                    b.split()
+
+        # clear ignore flags after split asteriods stop overlapping
+        for a in asteroids:
+            for other in list(a.ignore_collisions_with):
+                # if other died or they no longer overlap, stop ignoring
+                if (not other.alive()) or (not a.collides_with(other)):
+                    a.ignore_collisions_with.remove(other)
+
+        # --- debug: draw lines between asteroids that are ignoring collisions ---
+        if debug:
+            debug_color = (0, 255, 0)  # bright green
+
+            for a in asteroids:
+                for other in a.ignore_collisions_with:
+                    # Only draw one line per pair (avoid duplicates)
+                    if id(a) < id(other):
+                        pygame.draw.line(
+                            screen,
+                            debug_color,
+                            a.position,
+                            other.position,
+                            1,  # line width
+                        )
 
         # draw all drawable objects
         for each in drawable:
